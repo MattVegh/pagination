@@ -5,7 +5,7 @@ class Table extends Component {
 
     state = {
         activePage: 1,
-        rowsPerPage: 5,
+        rowsPerPage: 10,
         columnHeaders: ['Name', 'Class', 'Level', 'Gold'],
         rowArray: [
             ['Leo', 'Warrior', 1, 41],
@@ -85,6 +85,10 @@ class Table extends Component {
         let startPage = 1
         let endPage = totalPages
         console.log('start and end pages', startPage, endPage)
+
+        //map out the total pages to get them indexed
+        let pages = Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i)
+        console.log('pages', pages)
 
         //calc start and ending indexes for each page
         let startIndex = (activePage - 1)  * rowsPerPage
