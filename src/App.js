@@ -6,7 +6,6 @@ class Table extends Component {
     state = {
         activePage: 1,
         rowsPerPage: 10,
-        totalPages: 1,
         columnHeaders: ['Name', 'Class', 'Level', 'Gold'],
         rowArray: [
             ['Leo', 'Warrior', 1, 41],
@@ -26,7 +25,14 @@ class Table extends Component {
             ['Denzel', 'Cleric', 15, 120],
             ['Grey', 'Rogue', 16, 22],
             ['Mimic', 'Mimic', '', 4],
-            ['', '', 18, 0]
+            ['', '', 18, 0],
+            ['', '', 19, 0],
+            ['Leo', 'Warrior', 20, 41],
+            ['Ragnarok', 'Warlock', 21, 450],
+            ['Denzel', 'Cleric', 22, 120],
+            ['Grey', 'Rogue', 23, 22],
+            ['Mimic', 'Mimic', 24, 4],
+            ['', '', 25, 0]
         ]
     }
 
@@ -58,10 +64,29 @@ class Table extends Component {
     }
 
     pagination = () => {
+        //making easier to read variables
         let activePage = this.state.activePage
-        let totalPages = this.state.totalPages
+        console.log('active page', activePage)
+
+        let totalPages = Math.ceil(this.state.rowArray.length / this.state.rowsPerPage)
+        console.log('total pages', totalPages)
+
         let rowArray = this.state.rowArray
         let rowsPerPage = this.state.rowsPerPage
+        console.log('rowsPerPage', rowsPerPage)
+
+        //makes sure activePage stays in range
+        if (this.state.activePage < 1) {
+          activePage = 1
+        } else if (this.state.activePage > totalPages) {
+          activePage = totalPages
+        }
+        
+        //calc start and ending indexes for each page
+        let startIndex = (activePage - 1)  * rowsPerPage
+        let endIndex = Math.min((startIndex + rowsPerPage -1), (rowArray.length -1))
+        console.log('startIndex endIndex', startIndex, endIndex)
+        
         
         let pagedRows = rowArray.slice(0, rowsPerPage)
 
