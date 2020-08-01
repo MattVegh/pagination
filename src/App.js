@@ -1,94 +1,111 @@
-import React from 'react';
- 
-import './App.css';
- 
-const applyUpdateResult = (result) => (prevState) => ({
-  hits: [...prevState.hits, ...result.hits],
-  page: result.page,
-});
- 
-const applySetResult = (result) => (prevState) => ({
-  hits: result.hits,
-  page: result.page,
-});
- 
-const getHackerNewsUrl = (value, page) =>
-  `https://hn.algolia.com/api/v1/search?query=${value}&page=${page}&hitsPerPage=100`;
- 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
- 
-    this.state = {
-      hits: [],
-      page: null,
-    };
-  }
- 
-  onInitialSearch = (e) => {
-    e.preventDefault();
- 
-    const { value } = this.input;
- 
-    if (value === '') {
-      return;
-    }
- 
-    this.fetchStories(value, 0);
-  }
+import React, { Component } from 'react'
+import './table.css'
 
-  onPaginatedSearch = (e) =>
-    this.fetchStories(this.input.value, this.state.page + 1)
- 
-  fetchStories = (value, page) =>
-    fetch(getHackerNewsUrl(value, page))
-      .then(response => response.json())
-      .then(result => this.onSetResult(result, page));
- 
-  onSetResult = (result, page) =>
-    page === 0
-      ? this.setState(applySetResult(result))
-      : this.setState(applyUpdateResult(result));
- 
-  render() {
-    return (
-      <div className="page">
-        <div className="interactions">
-          <form type="submit" onSubmit={this.onInitialSearch}>
-            <input type="text" ref={node => this.input = node} />
-            <button type="submit">Search</button>
-          </form>
-        </div>
- 
-        <List
-          list={this.state.hits}
-          page={this.state.page}
-          onPaginatedSearch={this.onPaginatedSearch}
-        />
-      </div>
-    );
-  }
+
+class Table extends Component {
+
+    state = {
+        activePage: 1,
+        rowsPerPage: 10,
+        totalPages: 1,
+        columnHeaders: ['Name', 'Class', 'Level', 'Gold'],
+        rowArray: [
+            ['Leo', 'Warrior', 1, 41],
+            ['Ragnarok', 'Warlock', 2, 450],
+            ['Denzel', 'Cleric', 3, 120],
+            ['Grey', 'Rogue', 4, 22],
+            ['Mimic', 'Mimic', '', 4],
+            ['', '', 6, 0],
+            ['Leo', 'Warrior', 7, 41],
+            ['Ragnarok', 'Warlock', 8, 450],
+            ['Denzel', 'Cleric', 9, 120],
+            ['Grey', 'Rogue', 10, 22],
+            ['Mimic', 'Mimic', '', 4],
+            ['', '', 12, 0],
+            ['Leo', 'Warrior', 13, 41],
+            ['Ragnarok', 'Warlock', 14, 450],
+            ['Denzel', 'Cleric', 15, 120],
+            ['Grey', 'Rogue', 16, 22],
+            ['Mimic', 'Mimic', '', 4],
+            ['', '', 18, 0]
+        ]
+    }
+
+    componentDidMount() {
+        this.validateData()
+
+    }
+
+    validateData = () => {
+        let rows = this.state.rowArray
+
+        for (let i = 0; i < rows.length; i++) {
+            for (let j = 0; j < rows[i].length; j++) {
+                if (!rows[i][j]) {
+                    let cell = rows[i]
+                    cell[j] = 'N/A'
+                    rows[i] = cell
+                    this.setState({
+                        rowArray: rows
+                    })
+                }
+
+            }
+        }
+
+
+        this.pagination()
+
+    }
+
+    pagination = () => {
+        let activePage = this.state.activePage
+        let totalPages = this.state.totalPages
+        let rowArray = this.state.rowArray
+        let rowsPerPage = this.state.rowsPerPage
+        
+        let pagedRows = rowArray.slice(0, rowsPerPage + 1)
+
+        this.createBody(pagedRows)
+
+    }
+
+    createBody = (pagedRows) => {
+        let tableBody = document.getElementById('myTableBody')
+
+        pagedRows.forEach(function (rowData) {
+            let row = document.createElement('tr')
+
+            rowData.forEach(function (valueData) {
+                let value = document.createElement('td')
+                value.appendChild(document.createTextNode(valueData))
+                row.appendChild(value)
+            })
+
+            tableBody.appendChild(row)
+        })
+    }
+
+    render() {
+
+        return (
+            <div>
+                <table className='table'>
+
+                    <thead>
+                        <tr>
+                            {this.state.columnHeaders.map(column => <th key={column}>{column}</th>)}
+                        </tr>
+                    </thead>
+                    <tbody id='myTableBody'>
+                        {this.createBody}
+                    </tbody>
+
+                </table>
+            </div>
+        )
+    }
 }
- 
-const List = ({ list, page, onPaginatedSearch }) =>
-  <div>
-    <div className="list">
-      {list.map(item => <div className="list-row" key={item.objectID}>
-        <a href={item.url}>{item.title}</a>
-      </div>)}
-    </div>
- 
-    <div className="interactions">
-      {
-        page !== null &&
-        <button
-          type="button"
-          onClick={onPaginatedSearch}
-        >
-          More
-        </button>
-      }
-    </div>
-  </div>
- 
-export default App;
+
+
+export default Table
