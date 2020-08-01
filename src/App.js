@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import './table.css'
 
 
 class Table extends Component {
@@ -64,7 +63,7 @@ class Table extends Component {
         let rowArray = this.state.rowArray
         let rowsPerPage = this.state.rowsPerPage
         
-        let pagedRows = rowArray.slice(0, rowsPerPage + 1)
+        let pagedRows = rowArray.slice(0, rowsPerPage)
 
         this.createBody(pagedRows)
 
